@@ -1,0 +1,109 @@
+<%page expression_filter="h"/>
+<%inherit file="//layout/admin_lite.html"/>
+<%namespace name="lib" file="/lib.html" import="stylesheet_tags, add_script_block, csrf_hidden_input, sort_link" />
+
+<%def name="title()">${_('Clustering')} - ${parent.title()}</%def>
+
+<%def name="get_breadcrumbs()">
+    <%
+        return [
+            [_('Manager'), ['manager']],
+            [_('Clustering'), ['manager','system','clustering']],
+            [_('Buckets'),'']
+        ]
+    %>
+</%def>
+
+<style>
+ 
+
+    .pageContentWrapper, error, td {
+        font-size: 13px;
+    }
+
+    .groupTitle{
+        font-size:14px;
+        font-weight:bold;
+        padding-top:30px;
+    }
+
+    td, th {
+        padding: 5px 10px !important;
+    }
+
+
+
+    .peer {
+        margin-bottom:10px; 
+    }
+    .peerDetails {
+        padding-left:30px;
+    }
+
+</style>
+
+<%
+    search = kwargs.get("search", "")
+    pwnr = kwargs.get("pwnr", "-")
+    offset = kwargs.get("offset",0)
+    numItems  = kwargs.get("numItems",0)
+    ns = kwargs.get("ns", "-")
+    pwnr = kwargs.get("pwnr", "-")
+    countPerPage = kwargs.get("count",25)
+    appOptionList = kwargs.get("appOptionList", None)
+    pwnrOptionList = kwargs.get("pwnrOptionList", None)
+%>
+
+<%lib:generate_searchbar search="${search}" pwnr="${pwnr}" ns="${ns}" countPerPage="${countPerPage}" appOptionList="${appOptionList}" pwnrOptionList="${pwnrOptionList}" pwnr="${pwnr}"/>
+
+<div class="pageContentWrapper">
+
+<h1>Buckets</h1>
+
+<%lib:generate_master_pagination countPerPage="${countPerPage}" offset="${offset}" numItems="${numItems}" search="${search}" ns="${ns}" pwnr="${pwnr}"/>
+
+<table class="splTable">
+    <tbody>
+    <tr>
+        <th>${sort_link(_('Bucket Name'), ['manager','system','clustering','master', 'allbuckets'], cherrypy.request.params, 'name')}</th>
+        <th>${sort_link(_('Size'), ['manager','system','clustering','master', 'allbuckets'], cherrypy.request.params, 'bucket_size')}</th>
+        <th>${sort_link(_('Frozen'), ['manager','system','clustering','master', 'allbuckets'], cherrypy.request.params, 'frozen')}</th>
+        <th>${sort_link(_('Peers'), ['manager','system','clustering','master', 'allbuckets'], cherrypy.request.params, 'peers')}</th>
+    </tr>
+% for bucket in buckets: 
+    <tr>
+        <td>${bucket.name} </td>
+        <td>${bucket.bucket_size} </td>
+        <td>${bucket.frozen} </td>
+        <td>
+
+            <div id="peersList">
+
+                % for (peername,peer) in bucket.peers.items():
+                    <div class="peer"> 
+                        <div class="peerName"> ${peername} </div>
+                        <div class="peerDetails">
+                        <div> Primary: ${'yes' if peer.get('bucket_flags',None) == '0xffffffffffffffff' else 'no' } </div>
+                        <div> Search state: <%lib:pretty_bucket_search_state searchState="${peer.get('search_state',None)}"/></div>
+                        <div> Status: ${peer.get('status',None)}</div>
+                    </div>
+                 % endfor
+           </div>  
+        </td>
+    </tr>
+% endfor
+
+
+
+   </tbody>
+</table>
+
+<%lib:generate_slave_pagination countPerPage="${countPerPage}" offset="${offset}" numItems="${numItems}" search="${search}" ns="${ns}" pwnr="${pwnr}"/>
+
+<br/>
+
+
+<br/>
+
+
+</div>

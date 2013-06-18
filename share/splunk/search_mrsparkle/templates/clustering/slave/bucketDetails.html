@@ -1,0 +1,84 @@
+<%page expression_filter="h"/>
+<%inherit file="//layout/admin_lite.html"/>
+<%namespace name="lib" file="/lib.html" import="stylesheet_tags, add_script_block, csrf_hidden_input, sort_link" />
+
+<%def name="title()">${_('Clustering')} - ${parent.title()}</%def>
+<%def name="get_breadcrumbs()">
+    <%
+        return [
+            [_('Manager'), ['manager']],
+            [_('Clustering'), ['manager','system','clustering']],
+            [_('Bucket'),'']
+        ]
+    %>
+</%def>
+
+<style>
+    h2 {
+        margin-top:15px;
+    }
+
+    #status{
+        font-weight:bold;
+        margin-top:15px;
+        margin-bottom:15px;
+    }
+
+    .divider {
+        clear:both;
+        border-top:2px solid;
+    }
+
+    .groupTitle{
+        font-size:12px;
+        font-weight:bold;
+        margin-top:20px;
+        margin-bottom:15px;
+    }
+
+</style>
+
+<div class="pageContentWrapper">
+
+
+<h2>Bucket: ${bucket.name}</h2>
+
+
+<div id="status"> Status: ${bucket.status} </div>
+<div class="divider"/>
+
+<div class="groupTitle"> Bucket Attributes </div>
+
+<div> search state: <%lib:pretty_bucket_search_state searchState="${bucket.search_state}" /></div>
+
+
+<div class='groupTitle'> Generations </div>
+
+<table class="msg-listing" style="width: auto">
+    <tr>
+        <th>${_('Generation')}</th>
+        <th>${_('Mask')}</th>
+    </tr>
+    % for generation,mask in bucket.generations.items():
+        <tr>
+            <td>${generation} </td>
+            <td> ${mask}</td>
+        </tr>
+    % endfor
+</table>
+
+
+
+
+<br/>
+
+<br/>
+
+
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>

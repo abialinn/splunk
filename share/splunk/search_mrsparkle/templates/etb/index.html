@@ -1,0 +1,295 @@
+<%inherit file="//layout/base.html" />
+<%namespace name="lib" file="//lib.html" import="*" />
+
+<%def name="js()">
+<script type="text/javascript" src="${make_url('/static/js/etb.js')}"></script>
+
+% if len(successmessage) > 0:
+<script type="text/javascript">
+    openSuccess();
+</script>
+% endif
+
+</%def>    
+
+<%def name="css()"> 
+    <%coreCSSFiles = ["/static/css/view.css", "/static/css/skins/default/default.css", '/modules/nav/AccountBar.css', '/static/css/print.css', '/static/css/etb.css'] %>
+    <%lib:stylesheet_tags files="${coreCSSFiles}" />
+    <%lib:get_application_css app="${namespace}" />
+</%def>
+
+<%def name="body_element_open()">
+    <body>
+</%def>
+<style>
+.green { color:#73A550 }
+.eventval { color:#0a78a0 }
+.et { color:#333; font-size: 125%; font-family: Courier;}
+
+
+</style>
+<%
+import splunk.util
+inputCounter = 0
+
+def alphanumCMP(x,y):
+    try:
+        x1 = float(x)
+        y1 = float(y)
+        return cmp(x1,y1)
+    except:
+        return cmp(x,y)
+%>
+
+<div class="appHeaderWrapper">
+    <div class="layoutRow oneColRow splClearfix appHeader">       
+        <div class="SplunkModule AccountBar">                        
+            <a href="#" class="splIcon splIcon-close"></a>
+            <div class="appLogoContainer popupAppLogoContainer">
+                <a href="javascript:void()" class="appLogo notLinked"></a>
+                <h1>${_('Build event type')}</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+% if len(successmessage) == 0:
+  % for msg in messages:
+      ${msg}
+  % endfor 
+% endif
+
+<form method="POST" id="iterate" class="entityEditForm">
+
+  <textarea class="hidden" id="sid"       name="sid">${sid|h}</textarea>
+  <textarea class="hidden" id="offset"    name="offset">${offset|h}</textarea>
+  <textarea class="hidden" id="edited"    name="edited">${edited|h}</textarea>
+  <textarea class="hidden" id="eventtype" name="eventtype">${eventtype|h}</textarea>
+  ${csrf_hidden_input()}
+  <input type="hidden" name="namespace"   value="${namespace|h}" />  
+
+  
+  <div id="control">
+
+    <h2 class="green">${_('Generated event type')}</h2> 
+    <div id="generatedEventtype">
+      <ul class="rulesetList">
+        <span class="et"><b>
+            % if len(eventtype) == 0:
+               ${_('None')}
+            % else:
+               ${eventtype|h}
+            % endif
+        </b></span>
+      </ul>
+    </div>
+    <div class="eventtypeButtons">
+          % if len(eventtype)> 0 and testingurl != None: 
+               <button class="splButton-secondary" onclick="openEditRule(); return false;"><%doc>TRANS: Button</%doc><span>${_('Edit')}</span></button>
+               <button class="splButton-secondary" onclick="openTestAlert(); return false;"><span><%doc>TRANS: Test Button</%doc>${_('Test')}</span></button>
+               <button class="splButton-secondary" onclick="openSave(); return false;" ><span><%doc>TRANS: Save Button</%doc>${_('Save')}</span></button>
+          % endif
+      </div>
+    </div>
+
+  <div id="results splClearfix">
+    <div id="ruleset" class>
+
+% if edited:
+   <p class="valueInputDiv"> 
+     <!-- <input type="button" value="<%doc>TRANS: Generate Button</%doc>${_('Generate')}"  /> -->
+     <button type="submit" onclick="revertEdit()" class="splButton-secondary" name="preview"><span><%doc>TRANS: Button to re-generate field values</%doc>${_('Revert edits')}</span></button>
+   </p>
+% elif eventValues:
+
+    <div class="fieldsetWrapper">
+        <fieldset>
+            <legend class="hasHelpTbext">${_('Suggested field values')}</legend>
+            <div class="ifxHelpColumn" style="xwidth:80%">
+              <div class="advancedHelpText" style="padding:5px">
+                  <b>${_('Check the below field values, to build up your new eventtype.')}</b>
+                  <font class="eventval">${_('Blue field values')}</font> ${_('are from your selected event; other values are from other events.')}
+              </div>
+            </div>
+            <ul style="padding:0px; margin:0px;">
+            % for attr in fieldOrder:
+                <li style="list-style-type: none"><b class="green">${attr|h}</b><br/>
+                <% i = 0 %>
+                <% val = eventValues[attr] %>
+                % for subval in val:
+                  <% shortsubval = splunk.util.smartTrim(subval, 40) %>
+                  <% i += 1 %>
+                  <% countstr = "%.2d" % i %>
+                  <% checked = '' %>
+                  <% if attr in checkedValues and str(subval) in checkedValues[attr]: checked = 'checked="checked"' %>
+                  &nbsp;&nbsp;<input type="checkbox" class="checkbox" id="check${countstr|h}${attr|h}" name="check${countstr|h}${attr|h}" VALUE="${subval|h}" ${checked} onclick='this.form.submit()' /> <label for="check${countstr|h}${attr|h}" title="${attr|h}=${subval|h}"><font class="eventval">${shortsubval|h}</font></label></li>
+                % endfor
+                % if attr in fieldValues and fieldValues[attr] != None and len(fieldValues[attr]['modes']) > 1:
+                    <% altvalues = [vd['value'] for vd in fieldValues[attr]['modes'] if vd['value'] not in val] %>
+                    <% altvalues.sort(alphanumCMP) %>
+                    % if len(altvalues) > 0:
+                       <!--ul style="padding:0px; margin:0px;" -->
+                         <!--b>${_('&nbsp;&nbsp;Alternative values:')}</b -->
+                         <!-- ul -->
+                           % for altval in altvalues:
+                              <% 
+                                 checked = '' 
+                                 i += 1
+                                 countstr = "%.2d" % i 
+                                 inputCounter += 1
+                                 shortval = splunk.util.smartTrim(altval, 40)
+                              %>
+                             <% if attr in checkedValues and altval in checkedValues[attr]: checked = 'checked="checked"' %>
+                              <li style="list-style-type: none">&nbsp;&nbsp;<input id="pgInput${inputCounter}" type="checkbox" class="checkbox" name="check${countstr|h}${attr|h}" VALUE="${altval|h}" ${checked} onclick='this.form.submit()' /> <label for="pgInput${inputCounter}" title="${altval|h}">${shortval|h}</label> </li>
+                           % endfor
+                         <!-- /ul -->
+                       <!-- /ul -->
+                    % endif
+                <br/>
+                % endif
+            % endfor 
+            </ul>
+        </fieldset>
+    </div>  
+% endif
+    </div>  
+    <div id="events">
+      <h2 class="green" style="padding:0px">${_('Sample events')}</h2>
+      <div class="ifxHelpColumn" style="xwidth:80%">
+        <div class="advancedHelpText" style="padding:5px">
+          <b>Note:</b> ${_('Sample events match the current eventtype search.')}</b>
+        </div>
+      </div>
+
+      <div id="eventListing">
+          <table class="splTable">
+            <tbody>
+              % for event in events:
+                <tr>
+                  <td><pre class="splFont-mono">${event | h}</pre></td>
+                </tr>
+              % endfor
+            </tbody>
+          </table> 
+      </div>
+
+      <br style="clear:both" />                        
+
+    </div>
+  </div>
+  <div id="saveLayer" class="popupContainer">
+    <div class="splHeader splHeader-popup">
+        <h2>${_('Save event type')}</h2>
+    </div>
+    
+    <div class="popupContent">
+      <div class="entityEditForm">
+        <div class="fieldsetWrapper">
+            <p class="helpText"><b>${_('Note:')}</b> ${_('To ensure the event type works properly, test it before saving.')}</p>
+            <table>
+              <tr>
+                <td>
+                  <label for="eventTypeName"><%doc>TRANS: Name to give to event type</%doc>${_('Name')}: &nbsp;</label>
+                </td>
+                <td>
+                  <input type="text"  name="eventTypeName" id="eventTypeName" style="width:20em" maxlength="50" />
+                </td>
+              </tr>
+              <tr>
+                  <td>
+                    <label for="eventTypeStyle">Style: </label>
+                  </td><td>
+                    <select name="eventTypeStyle" id="eventTypeStyle" style="width:20em">
+                      <option selected=selected value="">None</option>
+                      % for style in etstyles:
+                        <option value="${style|h}">${style[3:]|h}</option>
+                      % endfor
+                    </select>
+                  </td>
+                </tr>
+
+              <tr>
+                  <td valign=top>
+                    <label for="eventTypePriority">Priority: </label>
+                  </td><td>
+                    <select name="eventTypePriority" id="eventTypePriority" style="width:20em">
+                      <option value="1">Lowest</option>
+                      <option value="3">Low</option>
+                      <option selected=selected value="5">Average</option>
+                      <option value="7">High</option>
+                      <option value="10">Highest</option>
+                    </select>
+                    <br/>
+                    Determines which style wins, when an event <br/>has more than one event type.
+                  </td>
+                </tr>
+              </table>
+        </div>
+     </div>
+    </div>
+    <div class="popupFooter">
+               <button class="splButton-secondary" type="button" onclick="closeSave(event)" ><span><%doc>TRANS: Cancel form</%doc>${_('Cancel')}</span></button>
+               <button class="splButton-primary" type="submit" name="save" ><%doc>TRANS: Save event type</%doc><span>${_('Save')}</span></button>
+    </div>
+  </div>
+
+  <div id="editRuleLayer" class="popupContainer">
+    <div class="splHeader splHeader-popup">
+        <h2>${_('Edit event type')}</h2>
+    </div>
+    <div class="popupContent">
+        <div class="entityEditForm">
+            <div class="fieldsetWrapper">
+                <fieldset>
+                    <label for="editeventtype">                  
+                        <%doc>TRANS: Event type</%doc>
+                        ${_('Event type search')}</label>
+                        <div>
+                            <textarea type="text"  name="editeventtype" id="editeventtype" cols="50" rows="3" /></textarea>
+                    </div>                
+                </fieldset>
+            </div>
+        </div>
+    </div>
+    <div class="popupFooter">
+                <button class="splButton-secondary" onclick="closeEdit()" ><span><%doc>TRANS: Cancel form</%doc>${_('Cancel')}</span></button>
+                <button class="splButton-primary" type="submit" name="ok" onclick="editRule()"><span>${_('Apply')}</span></button>
+    </div>
+  </div>    
+
+% if testingurl != None: 
+
+  <div id="testAlertLayer" class="popupContainer">
+    <div class="splHeader splHeader-popup">
+        <h2>${_('Test event type')}</h2>
+    </div>
+    <div class="popupContent">
+        <p>
+            ${_('A new Splunk search window will open and allow you to verify that your event type returns the events you want.')}
+        </p>
+        <p>
+            ${_('When you are done testing your event type, close the search testing window and return to the Build event type window to save your event type or further refine it.')}
+        </p>
+    </div>
+    <div class="popupFooter">
+        <button class="splButton-secondary" onclick="closeTestAlert(); return false;" ><span><%doc>TRANS: Cancel form</%doc>${_('Cancel')}</span></button>
+        <button class="splButton-primary" name="ok"><span>${_('Test...')}</span></button>
+        <input type="hidden" id="testingurl" name="testingurl" value="${testingurl|h}" />
+    </div>
+  </div> 
+% endif
+ 
+ <div id="saveSuccessLayer" class="popupContainer">
+    <div class="splHeader splHeader-popup">
+        <h2>${_('Successfully saved event type')}</h2>
+    </div>
+    <div class="popupContent">
+        <h1 class="spl-icon-success-md">${_('Your event type has been saved.')}</h1>
+    </div>
+    <div class="popupFooter">
+        <button class="splButton-primary" name="ok" onclick="saveSuccessClose()"><span>${_('Close')}</span></button>
+    </div>
+  </div> 
+
+  <div class="splOverlay">&nbsp;</div>
+</form>

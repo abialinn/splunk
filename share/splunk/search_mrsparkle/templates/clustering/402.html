@@ -1,0 +1,32 @@
+<%inherit file="//layout/admin_lite.html"/>
+
+<%def name="title()">${_('Insufficent License Level')} - ${parent.title()}</%def>
+
+<%def name="get_breadcrumbs()">
+    <%  
+        return [
+            [_('Manager'), ['manager']],
+            [_('Clustering'), '']
+        ]
+    %>
+</%def>
+<style>
+    /* override admin_lite.css */
+   .msgBox h2{
+       margin: 13px 0;
+       color: #000;
+   }
+</style>
+
+<div class="eaiPagination">
+    <h2>${_('Clustering')}</h2> 
+    <p>${_('Configure cluster components, including master node, peer nodes, and search heads, and view their status')}</p>
+</div>
+<br />
+<div class="msgBox">
+    <h2>${_('Clustering is an Enterprise license-level feature and is currently not available on this instance.')}</h2>
+    
+    <p>${_('To enable this and other Enterprise features, <a href="http://www.splunk.com/r/aboutlicenses" target="_blank" class="spl-icon-external-link-xsm">learn more about licenses</a> at Splunk.com or <a href="http://www.splunk.com/r/getlicense" target="_blank" class="spl-icon-external-link-xsm">contact Splunk Sales</a> directly.')}</p>
+    
+    <p class="machine"> ${_('Splunkd response: %s' % controller_exception)|h}</p>
+</div>

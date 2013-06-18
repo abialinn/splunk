@@ -1,0 +1,226 @@
+<%page expression_filter="h"/>
+<%inherit file="//layout/admin_lite.html"/>
+
+<%def name="title()">${_('Licensing')} - ${parent.title()}</%def>
+<%def name="get_breadcrumbs()">
+    <%
+        return [
+            [make_url(['manager','system','clustering']), _('Clustering')]
+        ]
+    %>
+</%def>
+
+<style>
+	
+    #status{
+        font-weight:bold;
+        margin-top:15px;
+        margin-bottom:15px;
+    }
+
+    .divider {
+        clear:both;
+        border-top:2px solid;
+    }
+
+    .groupTitle{
+        font-size:12px;
+        font-weight:bold;
+        margin-top:20px;
+        margin-bottom:15px;
+    }
+
+</style>
+
+<div class="pageContentWrapper">
+
+
+<h1>Cluster Management</h1>
+<p>Lorem ipsum dolor sit amet.</p>
+
+<div class="groupTitle"> Cluster Master </div>
+<table class="splTable">
+    <tbody><tr>
+        <th><a href=""><span class="sortLabel">Master Name</span>         <span class="splSortNone"></span></a></th>
+        <th><a href=""><span class="sortLabel">Location</span>         <span class="splSortNone"></span></a></th>
+        <th><a href=""><span class="sortLabel">Last Heartbeat</span>           <span class="splSortNone"></span></a></th>
+        <th><a href=""><span class="sortLabel">Uptime</span>           <span class="splSortNone"></span></a></th>
+        <th><a href=""><span class="sortLabel">Status</span>           <span class="splSortNone"></span></a></th>
+        <th>  <a href=""><span class="sortLabel">Actions</span></a></th>
+    </tr>
+    <tr>
+        <td><a href="#">CFC60B45-D058-4DBA-A497-13D8300EA929</a></td>
+        <td>https://127.0.0.1:8282</td>
+        <td>?</td>
+        <td>?</td>
+        <td>?</td>
+        <td><a href="">Settings</a></td>
+</tr></tbody></table>
+
+<div class="groupTitle"> Cluster Peers </div>
+	            <div class="actionButtons">
+	                    <a class="splButton-primary" href="/en-US/manager/search/authentication/users/_new?action=edit&amp;ns=search">
+	                        <span>New</span>
+	                    </a>
+	            </div>
+		
+
+<table class="splTable">
+    <tbody><tr>
+         <th><a href=""><span class="sortLabel">Peer Name</span>         <span class="splSortNone"></span></a></th>
+        <th><a href=""><span class="sortLabel">Location</span>         <span class="splSortNone"></span></a></th>
+        <th><a href=""><span class="sortLabel">Buckets</span>           <span class="splSortNone"></span></a></th>        
+        <th><a href=""><span class="sortLabel">Last Heartbeat</span>           <span class="splSortNone"></span></a></th>
+        <th><a href=""><span class="sortLabel">Uptime</span>           <span class="splSortNone"></span></a></th>
+        <th><a href=""><span class="sortLabel">Status</span>           <span class="splSortNone"></span></a></th>
+        <th>  <a href=""><span class="sortLabel">Actions</span></a></th>    </tr>
+        <tr>
+            <td><a href="/en-US/manager/system/clustering/peers/11111111-1111-1111-1111-111111111111">11111111-1111-1111-1111-111111111111</a></td>
+            <td>127.0.0.1:9381 </td>
+            <td> 2</td>
+            <td>2011-10-03 20:02:42-07:00 </td>
+            <td>? </td>
+            <td>eStatusDown </td>
+            <td><a href="">Settings</a> </td>
+        </tr>
+        <tr>
+            <td><a href="/en-US/manager/system/clustering/peers/22222222-2222-2222-2222-222222222222">22222222-2222-2222-2222-222222222222</a></td>
+            <td>127.0.0.1:9382 </td>
+            <td> 5</td>
+            <td>2011-10-04 11:28:19-07:00 </td>
+            <td>? </td>
+            <td>eStatusDown </td>
+            <td><a href="">Settings</a> </td>
+        </tr>
+        <tr>
+            <td><a href="/en-US/manager/system/clustering/peers/33333333-3333-3333-3333-333333333333">33333333-3333-3333-3333-333333333333</a></td>
+            <td>127.0.0.1:9383 </td>
+            <td> 4</td>
+            <td>2011-10-04 11:28:18-07:00 </td>
+            <td>? </td>
+            <td>eStatusDown </td>
+            <td><a href="">Settings</a> </td>
+        </tr>
+         <tr>
+            <td><a href="/en-US/manager/system/clustering/peers/11111111-1111-1111-1111-111111111111">11111111-1111-1111-1111-111111111111</a></td>
+            <td>127.0.0.1:9381 </td>
+            <td> 2</td>
+            <td>2011-10-03 20:02:42-07:00 </td>
+            <td>? </td>
+            <td>eStatusDown </td>
+            <td><a href="">Settings</a> </td>
+        </tr>
+        <tr>
+            <td><a href="/en-US/manager/system/clustering/peers/22222222-2222-2222-2222-222222222222">22222222-2222-2222-2222-222222222222</a></td>
+            <td>127.0.0.1:9382 </td>
+            <td> 5</td>
+            <td>2011-10-04 11:28:19-07:00 </td>
+            <td>? </td>
+            <td>eStatusDown </td>
+            <td><a href="">Settings</a> </td>
+        </tr>
+        <tr>
+            <td><a href="/en-US/manager/system/clustering/peers/33333333-3333-3333-3333-333333333333">33333333-3333-3333-3333-333333333333</a></td>
+            <td>127.0.0.1:9383 </td>
+            <td> 4</td>
+            <td>2011-10-04 11:28:18-07:00 </td>
+            <td>? </td>
+            <td>eStatusDown </td>
+            <td><a href="">Settings</a> </td>
+        </tr>
+
+ <tr>
+            <td><a href="/en-US/manager/system/clustering/peers/11111111-1111-1111-1111-111111111111">11111111-1111-1111-1111-111111111111</a></td>
+            <td>127.0.0.1:9381 </td>
+            <td> 2</td>
+            <td>2011-10-03 20:02:42-07:00 </td>
+            <td>? </td>
+            <td>eStatusDown </td>
+            <td><a href="">Settings</a> </td>
+        </tr>
+        <tr>
+            <td><a href="/en-US/manager/system/clustering/peers/22222222-2222-2222-2222-222222222222">22222222-2222-2222-2222-222222222222</a></td>
+            <td>127.0.0.1:9382 </td>
+            <td> 5</td>
+            <td>2011-10-04 11:28:19-07:00 </td>
+            <td>? </td>
+            <td>eStatusDown </td>
+            <td><a href="">Settings</a> </td>
+        </tr>
+        <tr>
+            <td><a href="/en-US/manager/system/clustering/peers/33333333-3333-3333-3333-333333333333">33333333-3333-3333-3333-333333333333</a></td>
+            <td>127.0.0.1:9383 </td>
+            <td> 4</td>
+            <td>2011-10-04 11:28:18-07:00 </td>
+            <td>? </td>
+            <td>eStatusDown </td>
+            <td><a href="">Settings</a> </td>
+        </tr>
+
+ <tr>
+            <td><a href="/en-US/manager/system/clustering/peers/11111111-1111-1111-1111-111111111111">11111111-1111-1111-1111-111111111111</a></td>
+            <td>127.0.0.1:9381 </td>
+            <td> 2</td>
+            <td>2011-10-03 20:02:42-07:00 </td>
+            <td>? </td>
+            <td>eStatusDown </td>
+            <td><a href="">Settings</a> </td>
+        </tr>
+        <tr>
+            <td><a href="/en-US/manager/system/clustering/peers/22222222-2222-2222-2222-222222222222">22222222-2222-2222-2222-222222222222</a></td>
+            <td>127.0.0.1:9382 </td>
+            <td> 5</td>
+            <td>2011-10-04 11:28:19-07:00 </td>
+            <td>? </td>
+            <td>eStatusDown </td>
+            <td><a href="">Settings</a> </td>
+        </tr>
+        <tr>
+            <td><a href="/en-US/manager/system/clustering/peers/33333333-3333-3333-3333-333333333333">33333333-3333-3333-3333-333333333333</a></td>
+            <td>127.0.0.1:9383 </td>
+            <td> 4</td>
+            <td>2011-10-04 11:28:18-07:00 </td>
+            <td>? </td>
+            <td>eStatusDown </td>
+            <td><a href="">Settings</a> </td>
+        </tr>
+
+ <tr>
+            <td><a href="/en-US/manager/system/clustering/peers/11111111-1111-1111-1111-111111111111">11111111-1111-1111-1111-111111111111</a></td>
+            <td>127.0.0.1:9381 </td>
+            <td> 2</td>
+            <td>2011-10-03 20:02:42-07:00 </td>
+            <td>? </td>
+            <td>eStatusDown </td>
+            <td><a href="">Settings</a> </td>
+        </tr>
+        <tr>
+            <td><a href="/en-US/manager/system/clustering/peers/22222222-2222-2222-2222-222222222222">22222222-2222-2222-2222-222222222222</a></td>
+            <td>127.0.0.1:9382 </td>
+            <td> 5</td>
+            <td>2011-10-04 11:28:19-07:00 </td>
+            <td>? </td>
+            <td>eStatusDown </td>
+            <td><a href="">Settings</a> </td>
+        </tr>
+        <tr>
+            <td><a href="/en-US/manager/system/clustering/peers/33333333-3333-3333-3333-333333333333">33333333-3333-3333-3333-333333333333</a></td>
+            <td>127.0.0.1:9383 </td>
+            <td> 4</td>
+            <td>2011-10-04 11:28:18-07:00 </td>
+            <td>? </td>
+            <td>eStatusDown </td>
+            <td><a href="">Settings</a> </td>
+        </tr>
+
+</tbody></table>
+
+
+
+
+<br>
+
+<br>
+
+
+</div>

@@ -1,0 +1,112 @@
+<%page expression_filter="h"/>
+<%inherit file="//layout/admin_lite.html"/>
+<%namespace name="lib" file="/lib.html" import="stylesheet_tags, add_script_block, csrf_hidden_input, sort_link" />
+
+<%def name="title()">${_('Clustering')} - ${parent.title()}</%def>
+<%def name="get_breadcrumbs()">
+    <%
+        return [
+            [_('Manager'), ['manager']],
+            [_('Clustering'), ['manager','system','clustering']],
+            [_('Bucket'),'']
+        ]
+    %>
+</%def>
+
+<style>
+    h2 {
+        margin-top:15px;
+    }
+
+    .pageContentWrapper, error, td {
+        font-size: 13px;
+    }
+
+
+    #navList li
+    {
+        display: inline;
+        list-style-type: none;
+        padding-right: 25px;
+    }
+	
+    #status{
+        font-weight:bold;
+        margin-top:15px;
+        margin-bottom:15px;
+    }
+
+    .divider {
+        clear:both;
+        border-top:2px solid;
+    }
+
+    .groupTitle{
+        font-size:12px;
+        font-weight:bold;
+        margin-top:20px;
+        margin-bottom:15px;
+    }
+
+    #peersTitle { 
+        float:left;
+        width:75px;
+    }
+
+    #peersList { 
+        float:left;
+        width:600px;
+        
+    }
+
+
+    .peer {
+        margin-bottom:10px; 
+    }
+    .peerDetails {
+        padding-left:30px;
+    }
+
+</style>
+
+<div class="pageContentWrapper">
+
+
+
+<h2>Bucket: ${bucket.name}</h2>
+
+
+<div class="groupTitle"> Bucket Attributes </div>
+
+<div> Bucket size: ${bucket.bucket_size} </div>
+<div> Is frozen: ${bucket.frozen} </div>
+<div> Is standalone: ${bucket.standalone} </div>
+
+<div id="peersTitle">Peers:</div>
+
+<div id="peersList">
+
+    % for (peername,peer) in bucket.peers.items():
+        <div class="peer"> 
+            <div class="peerName"> ${peername} </div>
+            <div class="peerDetails">
+                <div> Primary: ${'yes' if peer.get('bucket_flags',None) == '0xffffffffffffffff' else 'no' } </div>
+                <div> Search state: <%lib:pretty_bucket_search_state searchState="${peer.get('search_state',None)}" /></div> 
+                <div> Status: ${peer.get('status',None)}</div>
+            </div>
+        </div>  
+        
+    % endfor
+</div>
+
+
+<div style="clear:both"/>
+</div>
+
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>

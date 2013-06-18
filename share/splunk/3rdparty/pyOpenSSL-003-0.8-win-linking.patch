@@ -1,0 +1,13 @@
+--- pyOpenSSL-0.8\setup.py.ORIG	2009-04-14 15:45:40.159500000 -0700
++++ pyOpenSSL-0.8\setup.py	2009-04-14 15:55:04.784500000 -0700
+@@ -56,8 +56,8 @@
+ 
+ # Add more platforms here when needed
+ if os.name == 'nt' or sys.platform == 'win32':
+-    Libraries = ['eay32', 'Ws2_32']
+-    ExtraObjects = [r"c:\Python25\libs\ssleay32.a"]
++    Libraries = ['ssleay32', 'libeay32', 'Ws2_32']
++    ExtraObjects = []
+ else:
+     Libraries = ['ssl', 'crypto']
+     ExtraObjects = []

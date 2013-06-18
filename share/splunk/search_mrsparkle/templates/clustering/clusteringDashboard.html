@@ -1,0 +1,347 @@
+<%inherit file="//layout/admin_lite.html"/>
+<%page expression_filter="h"/>
+<%namespace name="lib" file="/lib.html" import="stylesheet_tags, add_script_block, csrf_hidden_input, sort_link" />
+
+<%def name="title()">${_('Clustering')} - ${_(parent.title())}</%def>
+
+<%def name="get_breadcrumbs()">
+    <%
+        return [
+            [_('Manager'), ['manager']],
+            [_('Clustering'), ['manager','system','clustering']],
+            [_('Dashboard'),'']
+        ]
+    %>
+</%def>
+
+<style>
+    .pageContent {
+        width: 850px;
+        padding-top:10px; 
+    }
+
+    h1 {
+       display: inline;  
+    }
+
+    .groupTitle{
+        font-size:14px;
+        font-weight:bold;
+        padding-top:30px;
+    }
+
+    .nodeDetails {
+        padding: 20px 0px; 
+        width: 450px;
+    }
+ 
+
+    .nodeDetails td {
+        border-bottom: 1px solid; 
+        border-color: #CCC;
+        padding:5px 0px;
+    }
+
+    .nodeDetails td:first-child {
+        width: 200px; 
+    }
+
+    .pageContentWrapper, td {
+     font-size:13px;
+    }
+
+
+    .nodeDetails .top td{
+        border-top: 1px solid; 
+        border-color: #CCC;
+     }
+
+    .healthMeter {
+       background-color: #EDEDE9;
+       border: 1px solid; 
+       border-color: #C1C1C1;
+       height:50px;
+       height:auto !important;
+       text-align:center;
+       margin-bottom:8px;
+       padding: 25px 0px;
+    }
+
+    .smallMeter {
+      width:378px;
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+   
+    .large_num {
+        font-size: 22px;
+    }
+
+    .subStatus {
+        width:50%;
+    } 
+    
+    .peerDetails td {
+         width: 25%;
+    }
+
+    .indexDetails td {
+         width: 16%;
+         text-align:left;
+    }
+
+    .grayText {
+        padding-top:7px;
+        color: #999;
+    }
+
+    .mainMessageIcon {
+        background-repeat: no-repeat;
+        padding-left: 17px; 
+        margin-right:8px;
+    }
+
+    .green_check_mark_big {
+        background-image: url("/static/img/skins/default/state_sprite.png"); 
+        background-position:0px 0px;
+    }
+
+    .yellow_warning_big {
+        background-image: url("/static/img/skins/default/state_sprite.png"); 
+        background-position:-24px 0px;
+    }
+
+    .red_warning_big {
+        background-image: url("/static/img/skins/default/state_sprite.png"); 
+        background-position:-48px 0px;
+    }
+
+    .icon_small {
+        background-repeat: no-repeat;
+        padding-left: 17px; 
+    }
+
+    .green_success_small {
+        background-image: url("/static/img/skins/default/icon_complete.png"); 
+        background-position:0px 0px;
+    }
+
+    .yellow_warning_small { 
+        background-image: url("/static/img/skins/default/icon_alerts.png"); 
+        background-position:0px -16px;
+    }
+
+
+    .red_warning_small { 
+        background-image: url("/static/img/skins/default/icon_alerts.png"); 
+        background-position:0px -64px;
+    }
+
+</style>
+
+
+<div class="pageContentWrapper">
+<div class="pageContent">
+
+    <div class="eaiPaginationHeader splClearfix">
+        <div style="width:210px; float: left;"><h1>${_('Clustering Dashboard')}</h1></div> 
+        <div style="width:200px; float: left;">    <a class="splButton-primary"  href=${make_url(['manager','system','clustering', 'configureClustering'])} >
+                <span>${_('Configure')}</span>
+            </a>
+        </div>
+        <div style="clear:both;"/>
+   </div>
+
+<h2>${_('Master Node Details')} </h2>
+
+<table class="nodeDetails">
+<tr class="top">
+    <td> <b>${_('Master name')}</b></td>
+    <td>${master_info.label if master_info.label else master_guid}</td>
+</tr>
+<tr>
+    <td><b>${_('Replication factor')}</b></td>
+    <td>${clusterStatus.replication_factor}</td>
+</tr>
+<tr>
+    <td><b>${_('Search factor')}</b></td>
+    <td>${clusterStatus.search_factor}</td>
+</tr>
+</table>
+
+
+
+<h2> ${_('Cluster Overview')} </h2> 
+<br/>
+<% 
+    if isClusterSearchable: 
+        statusLabel = _('Searchable')
+        icon = 'green_check_mark_big'
+    else:
+        statusLabel = _('Not Completely Searchable')
+        icon = 'red_warning_big'
+
+    
+    showWarning = isPeerDown or (not isReplicationFactorMet) or (not isSearchFactorMet) or (numUnsearchableIndexes > 0) or isGenerationCommitFailure 
+
+    numSearchablePeers = peer_statuses.get("Up",0) 
+    numUnsearchablePeers = len(peers) - numSearchablePeers 
+
+
+ 
+%>
+% if len(peers) == 0: 
+<div class="healthMeter">
+    <div style="font-size:24px; padding-bottom:7px;">${_('No Peers Configured')}</div> 
+    <div>${_('To learn how to configure peers, refer to the documentation.')}</div> 
+    <div style="padding-top:5px;"><a href="${generateSelfHelpLink('learnmore.peers.enable')}" class="spl-icon-external-link-xsm" target="_blank">${_('Learn more.')}</a></div>
+</div>
+
+% else: 
+
+<div class="healthMeter">
+    <div style="font-size:24px; padding-bottom:7px;"> <span class="mainMessageIcon ${icon}">&nbsp;</span>${statusLabel}</div> 
+% if showWarning:
+    <div style="display:inline-block;padding-left:50px;">
+    <ul style="text-align:left; list-style-type: none;">
+    % if isPeerDown:
+        <li><span class="icon_small yellow_warning_small">&nbsp;</span>${_('A peer is down.')}</li>
+    % endif
+    % if not isReplicationFactorMet:
+        <li><span class="icon_small yellow_warning_small">&nbsp;</span>${_('Replication factor not met.')}</li>
+    % endif
+    % if not isSearchFactorMet:
+        <li><span class="icon_small yellow_warning_small">&nbsp;</span>${_('Search factor not met.')}</li>
+    % endif
+    % if numUnsearchableIndexes > 0:
+        <li><span class="icon_small yellow_warning_small">&nbsp;</span>${_('Indexed data is not completely searchable.')}</li>
+    % endif
+    % if isGenerationCommitFailure: 
+        <li><span class="icon_small yellow_warning_small">&nbsp;</span>${_('Cluster master failed to commit last generation.')}</li>
+    % endif
+   </ul>
+   </div>
+% else:
+    <div>${_('All peers and indexes are searchable.')}</div>
+% endif
+</div>
+
+<div style="margin-right:8px; float:left;" class="healthMeter smallMeter">
+    <div style="float:left" class="subStatus">
+        <div> <span class="large_num"> ${numSearchablePeers}</span> ${_('peers')} </div> 
+        <div class="grayText"> ${_('SEARCHABLE')}   </div>  
+    </div>
+    <div style="float:right" class="subStatus">
+        <div> <span class="large_num"> ${numUnsearchablePeers}</span> ${_('peers')} </div> 
+        <div class="grayText"> ${_('NOT SEARCHABLE')}   </div>  
+    </div>
+</div>
+
+<div style="float:right" class="healthMeter smallMeter">
+    <div style="float:left" class="subStatus">
+        <div> <span class="large_num"> ${numSearchableIndexes}</span> ${_('indexes')} </div> 
+        <div class="grayText"> ${_('SEARCHABLE')}   </div>  
+    </div>
+    <div style="float:right" class="subStatus">
+        <div> <span class="large_num"> ${numUnsearchableIndexes}</span> ${_('indexes')} </div> 
+        <div class="grayText"> ${_('NOT SEARCHABLE')}   </div>  
+    </div>
+</div>
+
+<div style="clear:both"/>
+
+<br/>
+
+<h2> ${_('Peer Details')} </h2>
+<br/>
+<table class="splTable peerDetails">
+    <tr>
+        <th>${_('Peer Name')}</th>
+        <th>${_('Searchable')}</th>
+        <th>${_('Status')}</th>
+        <th>${_('Buckets')}</th>
+    </tr>
+    % for (peer, peer_data) in sorted(peers.items(), key=(lambda x: x[1].get('label'))):
+        <tr>
+            <td><a href=${make_url(['manager','system','clustering','master','peers',peer_data.get('name', 'None')])} title="${peer_data.get('name', 'None')}" >${peer_data['label'] if peer_data['label'] else peer_data.get('name', 'None')}</a></td>
+            
+            <% 
+                 if peer_data.get('up',False):  
+                     searchStatus = "Yes"
+                     searchableIcon = "green_success_small" 
+                 else: 
+                     searchStatus = "No"
+                     searchableIcon = "red_warning_small"
+            %>
+            <td> <span class="icon_small ${searchableIcon}">&nbsp;</span>${_(searchStatus)} </td> 
+            <td>${_(peer_data.get('status','None'))} </td>
+            <td> ${len(peer_data.get('buckets',[]))}</td>
+        </tr>
+    % endfor
+</table>
+
+
+<h2> ${_('Index Details')}</h2>
+<br/>
+<table class="splTable indexDetails">
+    <tr>
+        <th><span>${_('Index')}</span></th>
+        <th><span>${_('Searchable')}</span></th>
+        <th><span>${_('Replicated Copies')}</span>         </th>
+        <th><span>${_('Searchable Copies')}</span>         </th>
+        <th><span>${_('Buckets')}</span></th>
+        <th><span>${_('Size')}</span></th>
+    </tr>
+
+    % for (index, index_data) in sorted(indexes.items(), cmp=(lambda x,y: (x[0][0] == '_' and y[0][0] != '_') and 1 or ((x[0][0] != '_' and y[0][0] == '_') and -1 or cmp(x[0],y[0])))): 
+        <%
+           searchable_icon = ''
+           searchable_copies_icon = ''
+           copies_icon = ''
+           index_size = index_data.get('size', 0)
+           num_buckets = index_data.get('buckets',0) 
+           if index_data.get('isSearchable',"No") == "Yes" and not isGenerationCommitFailure: 
+               searchable = "Yes"
+               searchable_icon = "green_success_small"  
+           else: 
+               searchable = "No"
+               searchable_icon = "red_warning_small"
+
+           min_searchable_copies = index_data.get('min_searchable_copies',0) 
+           if min_searchable_copies == 0:
+               searchable_copies_icon = "red_warning_small"
+           elif min_searchable_copies < clusterStatus.search_factor:
+               searchable_copies_icon = "yellow_warning_small"
+
+           min_copies = index_data.get('min_copies',0) 
+           if min_copies <= 1:
+               copies_icon = "red_warning_small"
+           elif min_copies < clusterStatus.replication_factor:
+               copies_icon = "yellow_warning_small"
+
+        %>
+    <tr>
+       <td>${index}</td>  
+       <td><span class="icon_small ${searchable_icon}">&nbsp;</span>${_(searchable)}</td>  
+       <td><span class="icon_small ${copies_icon}">&nbsp;</span>${min_copies}</td>  
+       <td><span class="icon_small ${searchable_copies_icon}">&nbsp;</span>${min_searchable_copies}</td>  
+       <td>${num_buckets}</td>  
+       <%
+            # 1024 * 1024 * 1024 * .005
+            min_index_size = 5368710 
+       %>
+       <td>${'%.2f GB' % (index_size/(1024.*1024*1024)) if index_size >= min_index_size else '<0.01 GB' }</td>  
+    </tr>
+   % endfor
+    
+</table>
+
+%endif
+
+<br/>
+<br/>
+<br/>
+<br/>
+</div>
+</div>
+

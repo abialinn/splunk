@@ -1,0 +1,105 @@
+<%page expression_filter="h"/>
+<%inherit file="//layout/admin_lite.html"/>
+<%namespace name="formset" file="//formset.html" />
+<%namespace name="lib" file="/lib.html" import="stylesheet_tags, add_script_block, csrf_hidden_input, sort_link" />
+
+<%def name="title()">${_('Clustering')} - ${parent.title()}</%def>
+<%def name="get_breadcrumbs()">
+    <%
+        return [
+            [_('Manager'), ['manager']],
+            [_('Clustering'), ['manager','system','clustering']],
+            [_('Peer'),'']
+        ]
+    %>
+</%def>
+
+<script>
+    function show_decomission_confirm(peername) {
+        Splunk.Popup.PeerDecomissionConfirm(peername);
+    } 
+</script>
+
+<style>
+
+    .groupTitle{
+        font-size:12px;
+        font-weight:bold;
+        padding-top:20px;
+    }
+
+    h2 {
+        margin-top:0px;
+    }
+
+    .slaveDetails {
+        padding: 20px 0px; 
+    }
+
+    .slaveDetails td {
+        border-bottom: 1px solid; 
+        border-color: #CCC;
+        padding:5px 0px;
+    }
+
+    .slaveDetails td:first-child {
+        width: 200px; 
+    }
+
+
+    .slaveDetails .top td{
+        border-top: 1px solid; 
+        border-color: #CCC;
+     }
+
+    .pageContentWrapper, error, td {
+        font-size: 13px;
+    }
+</style>
+
+
+% if controller_exception:
+    <div class="error">
+        <%lib:render_exception e="${controller_exception}" />
+    </div>
+% endif
+
+<div class="pageContentWrapper">
+
+
+
+
+<div class="eaiPagination">
+    <div class="eaiPaginationHeader splClearfix">
+        <h2>${_('Peer:')} ${peername}</h2>
+              
+   </div>
+
+<table class="slaveDetails">
+<tr class="top">
+    <td> <b>${_('Location')}</b></td>
+    <td>  ${host_port_pair}  </td>
+</tr>
+<tr>
+    <td><b>${_('Last Heartbeat')}</b></td>
+    <td> ${last_heartbeat}</td>
+</tr>
+<tr>
+    <td><b>${_('Replication port')}</b></td>
+    <td> ${rawdata_rcv_port}</td>
+</tr>
+<tr>
+    <td><b>${_('Status')}</b></td>
+    <td> ${status}</td>
+</tr>
+</table>
+
+
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+
+</div>

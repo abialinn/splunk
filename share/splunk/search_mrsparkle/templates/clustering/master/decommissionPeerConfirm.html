@@ -1,0 +1,27 @@
+<%page expression_filter="h"/>
+<%inherit file="//layout/wizard.html"/>
+<%namespace file="/lib.html" import="csrf_hidden_input"/>
+<style>
+    .decommissionConfirm { 
+        font-size: 13px; 
+        padding: 30px 40px; 
+     }
+</style>
+
+<div class="decommissionConfirm">
+    <form method="post" action="${make_url(['manager', 'system', 'clustering', 'master', 'startDecommission'])|h}">
+        ${csrf_hidden_input()}
+        <input type="hidden" name="peername" value="${peername}"/>
+        Are you sure you want to decommission this peer?  The decommissioning process may take several hours or longer.
+    </form>
+</div>
+<ul class="buttons splClearfix">
+    <li class="left">
+        <a href="${make_url(['manager', 'system', 'clustering', 'master', 'confirmDecommission'])}" class="splButton-secondary cancel">${_('Cancel')}</a>
+    </li>
+    <li class="right">
+        <button class="splButton-primary" type="submit" onclick="$(document.forms[0]).trigger('submit');">
+            <span>${_('Continue &raquo;')}</span>
+        </button>
+    </li>
+</ul>

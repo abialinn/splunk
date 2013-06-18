@@ -1,0 +1,36 @@
+## a simple javascript block which will perform a redirect to the 'redirect_to' URL
+
+<html>
+
+<head>
+
+    <script type="text/javascript">
+
+        % if '#' in redirect_to:
+
+            ## the redirect_to URL has a fragment id, use it
+
+            document.location = ${json_decode(redirect_to)};
+
+        % else:
+
+            ## the redirect_to URL has no fragment id, use the one in the current URL (if there is one)
+
+            var hashTag = '',
+                hashPos = document.location.href.indexOf('#');
+
+            if(hashPos > -1) {
+                hashTag = document.location.href.substr(hashPos);
+            }
+
+            document.location = ${json_decode(redirect_to)} + hashTag;
+
+        % endif
+
+    </script>
+
+</head>
+
+<body></body>
+
+</html>

@@ -1,0 +1,304 @@
+<%page expression_filter="h"/>
+<%inherit file="//layout/admin_lite_dialog.html"/>
+<%namespace name="lib" file="//lib.html" />
+<%namespace name="formset" file="//formset.html" />
+
+<%def name="title()">${_('Clustering')} - ${parent.title()}</%def>
+<%def name="get_breadcrumbs()">
+    <%
+        return [
+            [_('Manager'), ['manager']],
+            [_('Clustering'), ['manager','system','clustering']],
+            [_('Configure'),'']
+        ]
+    %>
+</%def>
+
+<style>
+    #navList li
+    {
+        display: inline;
+        list-style-type: none;
+        padding-right: 20px;
+    }
+
+    .note {
+        color: #666;
+        font-size: 10px;
+        font-style: italic;
+    }
+
+    .groupTitle{
+        font-size:14px;
+        font-weight:bold;
+        padding-top:30px;
+    }
+
+    #clusteringBody div {
+        line-height:18px;
+    }
+
+    h2 {
+        margin-top:5px;
+        padding:0px;
+    }
+
+    .disabledText {
+        color:#CCCCCC;
+    }
+
+    #clusteringBody {
+        font-size: 13px;
+    }
+
+    .showLink {
+        background-color:#FFFFFF;
+        display: inline-block;
+    }
+
+    label {
+        font-size: 13px; 
+    }
+
+    input[type=radio], input[type=radio]:checked, input[type=checkbox], input[type=checkbox]:checked { 
+        border:0px;
+    }
+
+
+</style>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+    $("#toggleClustering").click(update_clustering_enabled);
+        $('input[name="formset_mode"]').bind('click', update_self_display);
+        $(update_clustering_enabled());
+        //$(update_self_display());
+            $(".showLink").click(function() {
+                        update_advancedoptions_display2(this)
+                    });
+
+            $("#toggleAdvancedOptions").click(function() {
+                        update_advancedoptions_display(this)
+                    });
+
+    });
+
+    function update_advancedoptions_display(expandLink) {
+        var advancedOptions = $("#advanced_options");
+        if ($('#toggleAdvancedOptions').attr('checked')) {
+            $(advancedOptions).show();
+        } else {
+            $(advancedOptions).hide();
+        }
+    }
+
+    function update_advancedoptions_display2(expandLink) {
+        var advancedOptions = $("#advanced_options");
+        if($(advancedOptions).is(":visible")){
+            $(advancedOptions).hide();
+            $(expandLink).css("backgroundPosition","-65px -341px");
+        } else {
+            $(expandLink).css("backgroundPosition","-65px -320px");
+            $(advancedOptions).show();
+        }
+    }
+
+    // enable the hide/show of the master/slave configuration options
+    function update_self_display() {
+        if ($('input[name="formset_mode"]:checked').val() == 'slave') {
+            $('#slave_config').show();
+            $('#master_config').hide();
+            $('#searchhead_config').hide();
+        } else if ($('input[name="formset_mode"]:checked').val() == 'master') {
+            $('#master_config').show();
+            $('#slave_config').hide();
+            $('#searchhead_config').hide();
+        } else if ($('input[name="formset_mode"]:checked').val() == 'searchhead') {
+            $('#master_config').hide();
+            $('#slave_config').hide();
+            $('#searchhead_config').show();
+        }
+
+    }
+
+    function update_clustering_enabled() {
+        if ($('#toggleClustering').attr('checked')) {
+            //Enable clustering
+        $("input[name='formset_mode']").removeAttr('disabled')
+        $("input[name='mode']").each(function() {
+                $('#toggleClustering').removeAttr('disabled');
+            });
+            $("#cluster_mode_options").removeClass('disabledText');
+            $(update_self_display());
+        } else {
+            //Disable clustering
+        $("input[name='mode']").each(function() {
+                $('#toggleClustering').attr('disabled', true);
+                $('#toggleClustering').attr('display', 'none');
+            });
+        $("input[name='formset_mode']").attr('disabled',true)
+            $("#cluster_mode_options").addClass('disabledText');
+
+            $('#slave_config').hide();
+            $('#master_config').hide();
+            $('#searchhead_config').hide();
+
+        }
+   }
+</script>
+
+<div id="clusteringBody">
+
+% if controller_exception:
+    <div class="error">
+        <%lib:render_exception e="${controller_exception}" />
+    </div>
+% endif
+
+
+    <h2>${_('Configure Clustering')}</h2>
+
+    <br/>
+
+    <div class="control-group">
+        <input type="checkbox" id="toggleClustering" name="is_clustering_enabled" value="enabled" ${'checked' if is_clustering_enabled else ''}/>
+        <label for="toggleClustering">${_('Enable clustering')}</label>
+    </div>
+
+    <div id="cluster_mode_options" style="margin-left:20px" >
+        <!-- Slave configuration -->
+        <div id="slaveContainer">
+            <% sel = ' checked ' if mode == 'slave'  else '' %>
+            <input type="radio" name="formset_mode" id="formset_mode_peer" value="slave" ${sel} />
+            <label for="formset_mode_peer">${_('Make this instance a cluster peer.')}</label>
+            <div id="slave_config" style="margin-left:50px;display:none">
+                <table>
+                   <tr>
+                      <td>
+                        <label for="formset_master_uri">${_('What is the location of the cluster master?')} <span class="requiredAsterisk">*</span></label>
+                    </td>
+                    <td style="margin-left:10px">
+                        <input type="text" id="formset_master_uri" name="formset_master_uri" value="${master_uri}" style="width:200px"/>
+                    </td>
+                   </tr>
+                   <tr>
+                     <td></td>
+                     <td class="note" style="margin-left:10px">(e.g. https://example.com:1234)</td>
+                   </tr>
+                </table>
+                <div>
+                    <label for="slave_secret">${_('Secret key')} </label>
+                    <input type="password" id="slave_secret" name="slave_secret" value="${clusterStatus.secret if mode == 'slave' and clusterStatus.secret else ''}" style="width:100px; margin-left:10px;"/>
+                </div>
+                <div>
+                     <label for="splunk_tcp_port"> ${_('Replication port')} <span class="requiredAsterisk">*</span></label>
+                      <input type="text"  id="splunk_tcp_port" name="splunk_tcp_port" value="${clusterStatus.replication_port if clusterStatus.replication_port else ''}" style="width:100px; margin-left:10px; padding-left:10px;"/>
+                </div>
+            </div><!-- /#slave_config -->
+
+            <br/>
+
+        </div><!-- /#slaveContainer -->
+
+        <!-- Master configuration -->
+        <div id="masterContainer">
+            <% sel = ' checked ' if mode == 'master'  else '' %>
+            <input type="radio" id="formset_mode_master" name="formset_mode" value="master" ${sel} />
+            <label for="formset_mode_master">${_('Make this instance a cluster master.')}</label>
+            <div id="master_config" style="margin-left:50px;display:none">
+
+                <div>
+                    <label for="num_copies">${_('How many copies of each bucket are made?')} <span class="requiredAsterisk">*</span></label>
+                    <input type="text" id="num_copies" name="num_copies" value="${clusterStatus.replication_factor}" style="width:20px; margin-left:10px;"/>
+                </div>
+                <div>
+                   <label for="formset_heartbeat_timeout">${_('What is the heartbeat timeout of an indexer (seconds)?')} <span class="requiredAsterisk">*</span></label>
+                    <input type="text" id="formset_heartbeat_timeout" name="formset_heartbeat_timeout" value="${clusterStatus.heartbeat_timeout}" style="width:20px; margin-left:10px;"/>
+                </div>
+                <div>
+                    <label for="num_searchable_copies">${_('How many searchable copies of each bucket are made?')} <span class="requiredAsterisk">*</span></label>
+                    <input type="text" id="num_searchable_copies" name="num_searchable_copies" value="${clusterStatus.search_factor}" style="width:20px; margin-left:10px;"/>
+                </div>
+
+                <div>
+                    <label for="master_secret">${_('Secret key')}</label>
+                    <input type="password" id="master_secret" name="master_secret" value="${clusterStatus.secret if mode == 'master' and clusterStatus.secret else ''}" style="width:100px; margin-left:10px;"/>
+                </div>
+                <!-- Advanced options -->
+
+                        <!-- removing advanced options
+                <div>  <input type="checkbox" id="toggleAdvancedOptions"  value="enabled"/>Advanced Settings</div>
+
+
+                <div id="advanced_options" style="display:none">
+                <div> Connection timeout (seconds):  <input type="text" name="formset_cxn_timeout" value="${clusterStatus.cxn_timeout}" style="width:20px; margin-left:10px;"/> </div>
+                <div> Send timeout (seconds):  <input type="text" name="formset_send_timeout" value="${clusterStatus.send_timeout}" style="width:20px; margin-left:10px;"/> </div>
+                <div> Receive timeout (seconds):  <input type="text" name="formset_rcv_timeout" value="${clusterStatus.rcv_timeout}" style="width:20px; margin-left:10px;"/> </div>
+                </div>
+                        -->
+          </div><!-- /#master_config -->
+
+          <br/>
+
+        </div><!-- /#masterContainer -->
+
+        <!-- Searchhead configuration -->
+        <div id="searchheadContainer">
+          <% sel = ' checked ' if mode == 'searchhead'  else '' %>
+          <input type="radio" id="formset_mode_searchhead" name="formset_mode" value="searchhead" ${sel} />
+            <label for="formset_mode_searchhead">${_('Make this instance a search head.')}</label>
+          <div id="searchhead_config" style="margin-left:50px;display:none">
+            <table>
+               <tr>
+                  <td>
+                    <label for="searchhead_master_uri">${_('What is the location of the cluster master?')} <span class="requiredAsterisk">*</span></label>
+                  </td>
+                  <td style="margin-left:10px">
+                    <input type="text" id="searchhead_master_uri" name="searchhead_master_uri" value="${master_uri}" style="width:200px"/>
+                  </td>
+               </tr>
+               <tr>
+                  <td></td>
+                   <td class="note" style="margin-left:10px">(e.g. https://example.com:1234)</td>
+               </tr>
+           </table>
+
+            <div>
+                <label for="searchhead_secret">${_('Secret key')}</label>
+                <input type="password" id="searchhead_secret" name="searchhead_secret" value="${clusterStatus.secret if mode == 'searchhead' and clusterStatus.secret else ''}" style="width:100px; margin-left:10px;"/>
+            </div>
+        </div>
+       </div>
+    </div><!-- /#cluster_mode_options -->
+
+    <br/>
+    <br/>
+
+
+##
+## buttons
+##
+
+<%def name="gutter()">
+    <div class="admin-dialog-tray">
+    % if is_success:
+        % if requires_restart:
+            <%
+            qs = {'auto_restart':'1'}
+            %>
+            ${formset.button(_('Restart later'), href=return_to)}
+            ${formset.button(_('Restart now'), is_primary=True, href=make_url(['manager','search','control'], _qs=qs) )}
+        % else:
+            ${formset.button(_('OK'), is_primary=True, href=make_url(['manager','system','clustering']))}
+        % endif
+    % else:
+            <%
+            qs = {'cancel':'1'}
+            %>
+        ${formset.button(_('Cancel'), href=make_url(['manager','system','clustering'], _qs=qs))}
+        ${formset.button(_('Save'), is_primary=True, is_submit=True)}
+    % endif
+    </div>
+</%def>
+
+</div><!-- /.clusteringBody -->

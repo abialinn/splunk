@@ -1,0 +1,100 @@
+<%page expression_filter="h"/>
+<%inherit file="//layout/admin_lite.html"/>
+<%namespace name="lib" file="/lib.html" import="stylesheet_tags, add_script_block, csrf_hidden_input, sort_link" />
+
+<%def name="title()">${_('Clustering')} - ${parent.title()}</%def>
+<%def name="get_breadcrumbs()">
+    <%
+        return [
+            [_('Manager'), ['manager']],
+            [_('Clustering'), ['manager','system','clustering']],
+            [_('Search Head'),'']
+        ]
+    %>
+</%def>
+
+
+<style>
+
+ 
+    .pageContentWrapper, error, td {
+        font-size: 13px;
+    }
+
+
+    #navList li
+    {
+        display: inline;
+        list-style-type: none;
+        padding-right: 25px;
+    }
+
+    td {
+        width:20%; 
+    } 
+</style>
+
+
+<div class="pageContentWrapper">
+
+
+
+
+<div> 
+   <ul id="navList">
+       <li> 
+   </ul>
+</div>
+
+    <div class="eaiPaginationHeader splClearfix">
+        <div style="width:150px; float: left;"><h1>${_('Search Head')}</h1></div> 
+        <div style="width:200px; float: left;">    <a class="splButton-primary"  href=${make_url(['manager','system','clustering', 'configureClustering'])} >
+                <span>${_('Configure')}</span>
+            </a>
+        </div>
+        <div style="clear:both;"/>
+   </div>
+
+
+
+<table style="padding-top:10px;" class="splTable">
+    <tbody><tr>
+        <th>${_('Master Location')}</th>
+        <th>${_('Generation ID')}</th>
+        <th>${_('Generation Peers')}</th>
+    </tr>
+
+% for sh in searchhead_info:
+ 
+        <tr>
+            <td>${sh.name}</td>
+            <td>${sh.generation_id}</td>
+            <td>
+                % if not sh.generation_peers: 
+                    ${_('None')}
+                % else: 
+                    % for peer in sh.generation_peers: 
+                        <div> ${peer} </div>
+                    % endfor
+                % endif
+            </td>
+        </tr>
+% endfor
+   </tbody>
+</table>
+
+
+<div></div>
+
+
+
+
+
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+
+</div>

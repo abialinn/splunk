@@ -1,0 +1,18 @@
+<%page expression_filter="h"/>
+<%inherit file="//layout/wizard.html"/>
+<div class="content saveSearchSuccess">
+% if controller_exception: 
+    <h1 style="color:#FF0000">${_('Decommission Failed')}</h1>
+    <div style="padding: 30px 0px">${controller_exception}</div>
+% else: 
+    <h1 class="spl-icon-success-md">${_('Decommission started successfully')}</h1>
+% endif
+</div>
+
+<ul class="buttons splClearfix">
+    <li class="right">
+        <a class="splButton-primary cancel ok"  href="${make_url(['manager', 'system', 'clustering', 'master', 'peers', peername])}" >
+            <span>${_('OK')}</span>
+        </a>
+    </li>
+</ul> 

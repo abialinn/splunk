@@ -1,0 +1,139 @@
+<%page expression_filter="h"/>
+<%inherit file="//layout/admin_lite.html"/>
+<%namespace name="lib" file="/lib.html" import="stylesheet_tags, add_script_block, csrf_hidden_input, sort_link" />
+
+<%def name="title()">${_('Clustering')} - ${parent.title()}</%def>
+<%def name="get_breadcrumbs()">
+    <%
+        return [
+            [_('Manager'), ['manager']],
+            [_('Clustering'), ['manager','system','clustering']],
+            [_('Peer'),'']
+        ]
+    %>
+</%def>
+
+
+<style>
+
+    .slaveDetails {
+        margin: 20px 0;
+    }
+
+    .slaveDetails td {
+        border-bottom: 1px solid;
+        border-color: #CCC;
+        padding:5px 0px;
+    }
+
+    .slaveDetails td:first-child {
+        width: 200px;
+    }
+
+
+    .slaveDetails .top td{
+        border-top: 1px solid;
+        border-color: #CCC;
+     }
+
+
+
+    #navList li
+    {
+        display: inline;
+        list-style-type: none;
+        padding-right: 25px;
+    }
+
+    .leftHeader {
+        float:left;
+        width:80%;
+        margin-top:15px;
+    }
+
+    .rightHeader {
+        float:left;
+        width:20%;
+        margin-top:15px;
+    }
+
+    .leftHeader div, .rightHeader div {
+        margin-bottom:15px;
+        font-size:12px;
+        font-weight:bold;
+    }
+
+    .divider {
+        clear:both;
+        border-top:2px solid;
+    }
+
+    .groupTitle{
+        font-size:12px;
+        font-weight:bold;
+        padding-top:20px;
+    }
+
+    h2 {
+        margin-top:0px;
+    }
+
+    .pageContentWrapper, error, td {
+        font-size: 13px;
+    }
+
+</style>
+
+<%
+    search = kwargs.get("search", "")
+    pwnr = kwargs.get("pwnr", "-")
+    offset = kwargs.get("offset",0)
+    numItems  = kwargs.get("numItems",0)
+    ns = kwargs.get("ns", "-")
+    pwnr = kwargs.get("pwnr", "-")
+    countPerPage = kwargs.get("count",25)
+    appOptionList = None
+    pwnrOptionList = None
+%>
+
+<div class="pageContentWrapper">
+
+
+
+
+
+
+<div class="eaiPagination">
+    <div class="eaiPaginationHeader splClearfix">
+        <h2>${_('Peer:')} ${peername}</h2>
+            <a class="splButton-primary"  href=${make_url(['manager','system','clustering', 'configureClustering'])} >
+                <span>${_('Configure')}</span>
+            </a>
+    </div>
+
+<table class="slaveDetails">
+<tr class="top">
+    <td><b>${_('Master Location')}</b></td>
+    <td> ${master_uri} </td>
+</tr>
+<tr>
+    <td><b>${_('Is registered')}</b></td>
+    <td>${"True" if slave_info.is_registered else "False"}</td>
+</tr>
+<tr>
+    <td><b>${_('Replication port')}</b></td>
+    <td> ${config.replication_port}</td>
+</tr>
+</table>
+
+
+
+
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+
+</div>
