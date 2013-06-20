@@ -8,7 +8,7 @@ import sys
 import logging
 
 logger=logging.getLogger()
-file=logging.FileHandler("cyd.log")
+file=logging.FileHandler("test.log")
 logger.addHandler(file)
 logger.setLevel(logging.NOTSET)
 
@@ -33,12 +33,12 @@ class baseProduct:
 MM=baseProduct(DB_Path) 
 
 def main(): 
-    #r=csv.reader(sys.stdin)
+    r=csv.reader(sys.stdin)
     w=csv.writer(sys.stdout)
     header=[]
     first=True
     keyid=-1
-    r=[['product_id', 'product_type', 'product_name', 'price'],['AV-CB-01', '', '', ''],['FI-FW-02', '', '', ''],['FI-SW-01', '', '', ''],['FL-DLH-02', '', '', ''],['FL-DSH-01', '', '', ''],['K9-BD-01', '', '', ''],['K9-CW-01', '', '', ''],['RP-LI-02', '', '', ''],['RP-SN-01', '', '', '']]
+    #r=[['product_id', 'product_type', 'product_name', 'price'],['AV-CB-01', '', '', ''],['FI-FW-02', '', '', ''],['FI-SW-01', '', '', ''],['FL-DLH-02', '', #'', ''],['FL-DSH-01', '', '', ''],['K9-BD-01', '', '', ''],['K9-CW-01', '', '', ''],['RP-LI-02', '', '', ''],['RP-SN-01', '', '', '']]
  
     for line in r: 
         header=line;
