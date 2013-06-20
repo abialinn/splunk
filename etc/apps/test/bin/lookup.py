@@ -38,8 +38,6 @@ def main():
     header=[]
     first=True
     keyid=-1
-    #r=[['product_id', 'product_type', 'product_name', 'price'],['AV-CB-01', '', '', ''],['FI-FW-02', '', '', ''],['FI-SW-01', '', '', ''],['FL-DLH-02', '', #'', ''],['FL-DSH-01', '', '', ''],['K9-BD-01', '', '', ''],['K9-CW-01', '', '', ''],['RP-LI-02', '', '', ''],['RP-SN-01', '', '', '']]
- 
     for line in r: 
         header=line;
         logger.info(line)
