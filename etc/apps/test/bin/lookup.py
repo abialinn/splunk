@@ -66,7 +66,7 @@ def main():
                 print keyid
             except:
                 print "product_id must exist in csv"
-            sys.exit(0)
+                sys.exit(0)
             w.writerow(header)
             first=False
             continue
@@ -77,7 +77,7 @@ def main():
         line=infor
         print line
     #logger.info(line)   
-    w.writerow(line)
+        w.writerow(line)
 main()        
         
             
