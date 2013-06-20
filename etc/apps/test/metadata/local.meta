@@ -1,0 +1,23 @@
+[app/ui]
+version = 5.0.3
+modtime = 1371693701.736788300
+
+[app/launcher]
+version = 5.0.3
+modtime = 1371693701.739788500
+
+[]
+access = read : [ * ], write : [ admin, power ]
+export = none
+version = 5.0.3
+modtime = 1371693712.479402700
+
+[indexes/dm]
+owner = admin
+version = 5.0.3
+modtime = 1371698667.038787300
+
+[inputs/tcp%3A%2F%2F9990]
+owner = admin
+version = 5.0.3
+modtime = 1371698698.247572400
